@@ -1,8 +1,8 @@
-import { test, expect } from '../../src/fixtures/api.fixtures';
+import { test, expect, API_CREDENTIALS } from '../../src/fixtures/api.fixtures';
 
 test.describe('Authentication API — POST /auth', () => {
   test('should return a valid token with correct credentials', async ({ authService }) => {
-    const token = await authService.createToken('admin', 'password123');
+    const token = await authService.createToken(API_CREDENTIALS.username, API_CREDENTIALS.password);
 
     expect(token).toBeTruthy();
     expect(typeof token).toBe('string');

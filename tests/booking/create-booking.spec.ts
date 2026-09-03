@@ -2,9 +2,13 @@ import { test, expect } from '../../src/fixtures/api.fixtures';
 import { BookingFactory } from '../../src/factories/booking.factory';
 
 test.describe('Booking API — Create (POST /booking)', () => {
-  test('should create a booking with default factory data', async ({ bookingService }) => {
+  test('should create a booking with default factory data', async ({
+    bookingService,
+    createdBookings,
+  }) => {
     const bookingData = BookingFactory.createDefault();
     const response = await bookingService.createBooking(bookingData);
+    createdBookings.add(response.bookingid);
 
     expect(response.bookingid).toBeTruthy();
     expect(typeof response.bookingid).toBe('number');
@@ -16,9 +20,13 @@ test.describe('Booking API — Create (POST /booking)', () => {
     expect(response.booking.bookingdates.checkout).toBe(bookingData.bookingdates.checkout);
   });
 
-  test('should create a booking with Faker-generated data', async ({ bookingService }) => {
+  test('should create a booking with Faker-generated data', async ({
+    bookingService,
+    createdBookings,
+  }) => {
     const bookingData = BookingFactory.createWithFaker();
     const response = await bookingService.createBooking(bookingData);
+    createdBookings.add(response.bookingid);
 
     expect(response.bookingid).toBeTruthy();
     expect(response.booking.firstname).toBe(bookingData.firstname);
@@ -27,7 +35,10 @@ test.describe('Booking API — Create (POST /booking)', () => {
     expect(response.booking.depositpaid).toBe(bookingData.depositpaid);
   });
 
-  test('should create a booking using the Builder pattern', async ({ bookingService }) => {
+  test('should create a booking using the Builder pattern', async ({
+    bookingService,
+    createdBookings,
+  }) => {
     const bookingData = BookingFactory.builder()
       .withFirstname('Alice')
       .withLastname('Wonderland')
@@ -39,6 +50,7 @@ test.describe('Booking API — Create (POST /booking)', () => {
       .build();
 
     const response = await bookingService.createBooking(bookingData);
+    createdBookings.add(response.bookingid);
 
     expect(response.bookingid).toBeTruthy();
     expect(response.booking.firstname).toBe('Alice');
@@ -50,9 +62,13 @@ test.describe('Booking API — Create (POST /booking)', () => {
     expect(response.booking.bookingdates.checkout).toBe('2026-03-07');
   });
 
-  test('should create a booking without additionalneeds field', async ({ bookingService }) => {
+  test('should create a booking without additionalneeds field', async ({
+    bookingService,
+    createdBookings,
+  }) => {
     const bookingData = BookingFactory.builder().withoutAdditionalNeeds().build();
     const response = await bookingService.createBooking(bookingData);
+    createdBookings.add(response.bookingid);
 
     expect(response.bookingid).toBeTruthy();
   });
@@ -68,13 +84,17 @@ test.describe('Booking API — Create (POST /booking)', () => {
     });
   });
 
-  test('should filter bookings by firstname and lastname', async ({ bookingService }) => {
+  test('should filter bookings by firstname and lastname', async ({
+    bookingService,
+    createdBookings,
+  }) => {
     const bookingData = BookingFactory.builder()
       .withFirstname('UniqueFirst')
       .withLastname('UniqueLast')
       .build();
 
-    await bookingService.createBooking(bookingData);
+    const created = await bookingService.createBooking(bookingData);
+    createdBookings.add(created.bookingid);
 
     const filtered = await bookingService.getBookings({
       firstname: 'UniqueFirst',
@@ -87,9 +107,10 @@ test.describe('Booking API — Create (POST /booking)', () => {
     });
   });
 
-  test('should retrieve a specific booking by ID', async ({ bookingService }) => {
+  test('should retrieve a specific booking by ID', async ({ bookingService, createdBookings }) => {
     const bookingData = BookingFactory.createWithFaker();
     const created = await bookingService.createBooking(bookingData);
+    createdBookings.add(created.bookingid);
 
     const retrieved = await bookingService.getBooking(created.bookingid);
 

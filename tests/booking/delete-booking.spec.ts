@@ -24,7 +24,7 @@ test.describe('Booking API — Delete (DELETE /booking/:id)', () => {
     expect(response.status).toBe(404);
   });
 
-  test('should remove the booking from the listings after deletion', async ({
+  test('should remove the booking from filtered listings after deletion', async ({
     bookingService,
     authToken,
   }) => {
@@ -36,7 +36,10 @@ test.describe('Booking API — Delete (DELETE /booking/:id)', () => {
     const created = await bookingService.createBooking(bookingData);
     await bookingService.deleteBooking(created.bookingid, authToken);
 
-    const response = await bookingService.getBookingRaw(created.bookingid);
-    expect(response.status).toBe(404);
+    const listings = await bookingService.getBookings({
+      firstname: 'ToDelete',
+      lastname: 'SoonGone',
+    });
+    expect(listings.some((booking) => booking.bookingid === created.bookingid)).toBe(false);
   });
 });

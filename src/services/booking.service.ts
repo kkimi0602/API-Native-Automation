@@ -24,14 +24,14 @@ export class BookingService extends BaseService implements IBookingService {
     if (filter?.checkout) params['checkout'] = filter.checkout;
 
     const response = await this.get('/booking', { params });
-    return response.json() as Promise<BookingId[]>;
+    return this.parseSuccessfulResponse<BookingId[]>(response);
   }
 
   async getBooking(id: number): Promise<Booking> {
     const response = await this.get(`/booking/${id}`, {
       headers: { Accept: 'application/json' },
     });
-    return response.json() as Promise<Booking>;
+    return this.parseSuccessfulResponse<Booking>(response);
   }
 
   async getBookingRaw(id: number): Promise<ServiceResponse<unknown>> {
@@ -45,7 +45,7 @@ export class BookingService extends BaseService implements IBookingService {
 
   async createBooking(booking: Booking): Promise<CreateBookingResponse> {
     const response = await this.post('/booking', booking);
-    return response.json() as Promise<CreateBookingResponse>;
+    return this.parseSuccessfulResponse<CreateBookingResponse>(response);
   }
 
   async createBookingRaw(booking: unknown): Promise<ServiceResponse<unknown>> {
@@ -59,7 +59,7 @@ export class BookingService extends BaseService implements IBookingService {
     const response = await this.put(`/booking/${id}`, booking, {
       Cookie: `token=${token}`,
     });
-    return response.json() as Promise<Booking>;
+    return this.parseSuccessfulResponse<Booking>(response);
   }
 
   async updateBookingRaw(
@@ -82,7 +82,7 @@ export class BookingService extends BaseService implements IBookingService {
     const response = await this.patch(`/booking/${id}`, booking, {
       Cookie: `token=${token}`,
     });
-    return response.json() as Promise<Booking>;
+    return this.parseSuccessfulResponse<Booking>(response);
   }
 
   // ─── Delete ────────────────────────────────────────────────────────────────

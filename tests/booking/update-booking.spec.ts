@@ -6,9 +6,11 @@ test.describe('Booking API — Update', () => {
     test('should fully replace a booking with valid token', async ({
       bookingService,
       authToken,
+      createdBookings,
     }) => {
       const original = BookingFactory.createWithFaker();
       const created = await bookingService.createBooking(original);
+      createdBookings.add(created.bookingid);
 
       const updated = BookingFactory.builder()
         .withFirstname('Updated')
@@ -34,9 +36,11 @@ test.describe('Booking API — Update', () => {
     test('should persist the full update when re-fetched', async ({
       bookingService,
       authToken,
+      createdBookings,
     }) => {
       const original = BookingFactory.createWithFaker();
       const created = await bookingService.createBooking(original);
+      createdBookings.add(created.bookingid);
 
       const updated = BookingFactory.builder()
         .withFirstname('Persisted')
@@ -60,9 +64,11 @@ test.describe('Booking API — Update', () => {
     test('should partially update firstname and lastname', async ({
       bookingService,
       authToken,
+      createdBookings,
     }) => {
       const original = BookingFactory.createWithFaker();
       const created = await bookingService.createBooking(original);
+      createdBookings.add(created.bookingid);
 
       const result = await bookingService.partialUpdateBooking(
         created.bookingid,
@@ -77,9 +83,14 @@ test.describe('Booking API — Update', () => {
       expect(result.depositpaid).toBe(original.depositpaid);
     });
 
-    test('should partially update booking dates', async ({ bookingService, authToken }) => {
+    test('should partially update booking dates', async ({
+      bookingService,
+      authToken,
+      createdBookings,
+    }) => {
       const original = BookingFactory.createWithFaker();
       const created = await bookingService.createBooking(original);
+      createdBookings.add(created.bookingid);
 
       const result = await bookingService.partialUpdateBooking(
         created.bookingid,
@@ -91,9 +102,14 @@ test.describe('Booking API — Update', () => {
       expect(result.bookingdates.checkout).toBe('2027-09-15');
     });
 
-    test('should partially update totalprice', async ({ bookingService, authToken }) => {
+    test('should partially update totalprice', async ({
+      bookingService,
+      authToken,
+      createdBookings,
+    }) => {
       const original = BookingFactory.createWithFaker();
       const created = await bookingService.createBooking(original);
+      createdBookings.add(created.bookingid);
 
       const result = await bookingService.partialUpdateBooking(
         created.bookingid,

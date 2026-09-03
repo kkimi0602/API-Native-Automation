@@ -12,7 +12,7 @@ export class AuthService extends BaseService implements IAuthService {
    */
   async createToken(username: string, password: string): Promise<string> {
     const response = await this.post('/auth', { username, password });
-    const body = (await response.json()) as AuthTokenResponse;
+    const body = await this.parseSuccessfulResponse<AuthTokenResponse>(response);
 
     if (!body.token) {
       throw new Error(`Authentication failed: ${body.reason ?? 'Unknown error'}`);

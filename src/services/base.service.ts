@@ -86,4 +86,15 @@ export abstract class BaseService {
     }
     return { status: response.status(), body };
   }
+
+  protected async parseSuccessfulResponse<T>(response: APIResponse): Promise<T> {
+    if (!response.ok()) {
+      const body = await response.text();
+      throw new Error(
+        `HTTP request failed with status ${response.status()} for ${response.url()}: ${body}`,
+      );
+    }
+
+    return (await response.json()) as T;
+  }
 }
